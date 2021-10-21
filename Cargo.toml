@@ -7,3 +7,4 @@ edition = "2018"
 
 [dependencies]
 exprocess = { git = "https://github.com/itskihaga/exprocess-rust.git",tag = "v0.0.0"}
+rand = { version = "0.8" }
