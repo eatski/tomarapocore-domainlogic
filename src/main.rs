@@ -17,7 +17,9 @@ impl ExprocessCore for AppCore {
     }
 
     fn resolve(prev: &Self::State, command: &Self::Command) -> Self::Result {
-        todo!()
+        match (prev,command) {
+            (AppState::Blank, AppCommand::Init { characters_num }) => init(*characters_num),
+        }
     }
 
     fn reducer(prev: &Self::State, result: &Self::Result) -> Self::State {
@@ -25,23 +27,28 @@ impl ExprocessCore for AppCore {
     }
 }
 
-
 enum AppState {
     Blank
 }
 enum AppCommand {
-
+    Init {
+        characters_num: usize
+    }
 }
 
 enum AppResult {
-
+    Init {
+        characters: Vec<Character>
+    }
 }
 
 type CharacterId = u32;
 
 struct Character {
     id:CharacterId,
-    cls: CharacterClass
+    cls: CharacterClass,
+    inventory: Vec<ItemId>,
+    // knowledges: Vec<KnowledgeId>
 }
 
 /**
@@ -54,7 +61,7 @@ enum CharacterClass {
 }
 
 pub mod ordinary {
-    use crate::{CharacterId, ItemId};
+    use crate::{*};
     pub struct Ordinary {
         directivities: Vec<Directivity>,
         helth: Helth
@@ -67,7 +74,9 @@ pub mod ordinary {
         Alive /* 生存 */,
         Possession(ItemId) /* アイテムなどの所持 */,
         Love(CharacterId) /* 対象キャラクターが生存しているかどうか */,
-        Hate(CharacterId) /* 対象キャラクターが死亡しているかどうか */
+        Hatred(CharacterId) /* 対象キャラクターが死亡しているかどうか */,
+        Justice /* 悪巧みを阻止する */,
+        Secret(KnowledgeId) /* 秘密を守る */
     }
 
     enum Helth {
@@ -85,7 +94,7 @@ pub mod ordinary {
 type ItemId = u32;
 
 /**
- * 
+ * アイテム
  */
 struct Item {
     id: ItemId,
@@ -93,6 +102,16 @@ struct Item {
 }
 
 enum ItemClass {
-    Book,
+    SkillBook,
+    Note,
+    Food,
     Other
+}
+
+type KnowledgeId = u32;
+
+fn init(characters_num: usize) -> AppResult {
+    AppResult::Init {
+        characters: todo!()
+    }
 }
