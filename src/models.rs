@@ -1,10 +1,12 @@
 
+#[derive(Clone)]
 pub struct Board {
     pub characters: Vec<Character>
 }
 
-pub type CharacterId = u32;
+pub type CharacterId = usize;
 
+#[derive(Clone)]
 pub struct Character {
     pub id: CharacterId,
     pub cls: CharacterClass,
@@ -14,6 +16,7 @@ pub struct Character {
 /**
  * クラス
  */
+#[derive(Clone)]
 pub enum CharacterClass {
     Ordinary(ordinary::Ordinary) /* 一般人 */,
     Brainwashed /* 洗脳された人 */,
@@ -22,6 +25,7 @@ pub enum CharacterClass {
 
 pub mod ordinary {
     use super::{*};
+    #[derive(Clone)]
     pub struct Ordinary {
         pub directivities: Vec<Directivity>,
         pub helth: Helth
@@ -30,6 +34,7 @@ pub mod ordinary {
     /**
         指向性 そのキャラの価値観などが反映される
     */
+    #[derive(Clone)]
     pub enum Directivity {
         Alive /* 生存 */,
         Possession(ItemId) /* アイテムなどの所持 */,
@@ -39,19 +44,21 @@ pub mod ordinary {
         Secret(KnowledgeId) /* 秘密を守る */
     }
 
+    #[derive(Clone)]
     pub enum Helth {
         Alive(HelthAlive),
         Dead
     }
 
-    pub type Sanity = u32;
+    pub type Sanity = usize;
 
+    #[derive(Clone)]
     pub struct HelthAlive {
         pub sanity: Sanity
     }
 }
 
-pub type ItemId = u32;
+pub type ItemId = usize;
 
 /**
  * アイテム
@@ -68,13 +75,13 @@ pub enum ItemClass {
     Other
 }
 
-type SkillId = u32;
+type SkillId = usize;
 
 pub struct Skill {
     id: SkillId
 }
 
-pub type KnowledgeId = u32;
+pub type KnowledgeId = usize;
 
 pub struct Knowledge {
     id: KnowledgeId,
@@ -102,9 +109,9 @@ pub enum KnowledgeClass {
     }
 }
 
-type SecretId = u32;
+type SecretId = usize;
 
-type RoomId = u32;
+type RoomId = usize;
 pub struct Room {
     pub id: RoomId,
     pub cls: RoomClass

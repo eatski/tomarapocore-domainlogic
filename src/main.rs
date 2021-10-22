@@ -17,22 +17,41 @@ impl ExprocessCore for AppCore {
     type Result = AppResult;
 
     fn init() -> Self::State {
-        AppState::Blank
-    }
-
-    fn resolve(prev: &Self::State, command: &Self::Command) -> Self::Result {
-        match (prev,command) {
-            (AppState::Blank, AppCommand::Init { characters_num }) => AppResult::Init(init(*characters_num)),
+        AppState {
+            content: AppStateContent::Blank
         }
     }
 
-    fn reducer(prev: &Self::State, result: &Self::Result) -> Self::State {
-        todo!()
+    fn resolve(prev: &Self::State, command: &Self::Command) -> Self::Result {
+        match (&prev.content,command) {
+            (AppStateContent::Blank, AppCommand::Init { characters_num }) => AppResult::Init(init(*characters_num)),
+            _ => todo!()
+        }
+    }
+
+    fn reducer(mut prev: &mut Self::State, result: &Self::Result) {
+        match (&prev.content,result) {
+            (AppStateContent::Blank, AppResult::Init(board)) => {
+                prev.content = AppStateContent::Playing {
+                    board:board.clone()
+                }
+            },
+            (AppStateContent::Playing { board }, AppResult::Init(_)) => {
+                todo!()
+            },
+        }
     }
 }
 
-enum AppState {
-    Blank
+struct AppState {
+    pub content: AppStateContent
+}
+
+enum AppStateContent {
+    Blank,
+    Playing {
+        board: Board
+    }
 }
 enum AppCommand {
     Init {
