@@ -28,29 +28,29 @@ impl ExprocessCore for AppCore {
     fn resolve(prev: &Self::State, command: &Self::Command) -> Self::Result {
         match (&prev.content,command) {
             (AppStateContent::Blank, AppCommand::Init { characters_num }) => AppResult::Init(init(*characters_num)),
-            (AppStateContent::Blank, _) => panic!(),
-            (_, AppCommand::Init { characters_num:_ }) => panic!(),
-            
-            (AppStateContent::Playing { board:_, phase: PlayingPhase::Daytime }, AppCommand::SelectRoom (mov)) => {
-                AppResult::SelectRoom(mov.to_vec())
-            },
-            (AppStateContent::Playing { board:_, phase: _ }, AppCommand::SelectRoom (_)) => panic!(),
+            (AppStateContent::Playing { board:_, phase: PlayingPhase::Daytime }, AppCommand::SelectRoom (mov)) => AppResult::SelectRoom(mov.to_vec()),
+            _ => panic!(),
         }
     }
 
     fn reducer(mut prev: &mut Self::State, result: &Self::Result) {
         match (&mut prev.content,result) {
-            (AppStateContent::Blank, AppResult::Init(board)) => {
+            (
+                AppStateContent::Blank,
+                AppResult::Init(board)
+            ) => {
                 prev.content = AppStateContent::Playing {
                     board:board.clone(),phase: PlayingPhase::Daytime
                 }
-            },
-            (AppStateContent::Blank, _) => panic!(),
-            (AppStateContent::Playing {board:_, phase: _}, AppResult::Init(_)) => panic!(),
-            (AppStateContent::Playing { board, phase:_ }, AppResult::SelectRoom(mov)) => {
+            }
+            (
+                AppStateContent::Playing { board, phase:_ },
+                AppResult::SelectRoom(mov)
+            ) => {
                 let phase = PlayingPhase::Night { character_locations: mov.to_vec() };
                 prev.content = AppStateContent::Playing { board:board.clone(),phase}
             },
+            _ => panic!()
         }
     }
 }
