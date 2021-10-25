@@ -109,9 +109,9 @@ pub enum KnowledgeClass {
     }
 }
 
-type SecretId = usize;
+pub type SecretId = usize;
 
-type RoomId = usize;
+pub type RoomId = usize;
 pub struct Room {
     pub id: RoomId,
     pub cls: RoomClass

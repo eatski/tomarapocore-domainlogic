@@ -1,6 +1,9 @@
+use core::panic;
+use std::collections::HashMap;
+
 use exprocess::core::{ExprocessCore};
 use functions::init;
-use models::{Board};
+use models::{Board, Character, CharacterId, RoomId};
 mod models;
 mod functions;
 
@@ -25,19 +28,28 @@ impl ExprocessCore for AppCore {
     fn resolve(prev: &Self::State, command: &Self::Command) -> Self::Result {
         match (&prev.content,command) {
             (AppStateContent::Blank, AppCommand::Init { characters_num }) => AppResult::Init(init(*characters_num)),
-            _ => todo!()
+            (AppStateContent::Blank, _) => panic!(),
+            (_, AppCommand::Init { characters_num:_ }) => panic!(),
+            
+            (AppStateContent::Playing { board:_, phase: PlayingPhase::Daytime }, AppCommand::SelectRoom (mov)) => {
+                AppResult::SelectRoom(mov.to_vec())
+            },
+            (AppStateContent::Playing { board:_, phase: _ }, AppCommand::SelectRoom (_)) => panic!(),
         }
     }
 
     fn reducer(mut prev: &mut Self::State, result: &Self::Result) {
-        match (&prev.content,result) {
+        match (&mut prev.content,result) {
             (AppStateContent::Blank, AppResult::Init(board)) => {
                 prev.content = AppStateContent::Playing {
-                    board:board.clone()
+                    board:board.clone(),phase: PlayingPhase::Daytime
                 }
             },
-            (AppStateContent::Playing { board }, AppResult::Init(_)) => {
-                todo!()
+            (AppStateContent::Blank, _) => panic!(),
+            (AppStateContent::Playing {board:_, phase: _}, AppResult::Init(_)) => panic!(),
+            (AppStateContent::Playing { board, phase:_ }, AppResult::SelectRoom(mov)) => {
+                let phase = PlayingPhase::Night { character_locations: mov.to_vec() };
+                prev.content = AppStateContent::Playing { board:board.clone(),phase}
             },
         }
     }
@@ -50,15 +62,34 @@ struct AppState {
 enum AppStateContent {
     Blank,
     Playing {
-        board: Board
+        board: Board,
+        phase: PlayingPhase
+    }
+}
+
+enum PlayingPhase {
+    Daytime,
+    Night {
+        character_locations: Vec<SelectRoom>
+    },
+    Midnight {
+        character_locations: Vec<SelectRoom>
     }
 }
 enum AppCommand {
     Init {
         characters_num: usize
-    }
+    },
+    SelectRoom(Vec<SelectRoom>)
+}
+
+#[derive(Clone)]
+struct SelectRoom {
+    pub character: CharacterId,
+    pub room: RoomId
 }
 
 enum AppResult {
-    Init(Board)
+    Init(Board),
+    SelectRoom(Vec<SelectRoom>)
 }
