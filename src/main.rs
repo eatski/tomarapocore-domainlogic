@@ -1,9 +1,8 @@
 use core::panic;
-use std::collections::HashMap;
 
 use exprocess::core::{ExprocessCore};
 use functions::init;
-use models::{Board, Character, CharacterId, RoomId};
+use models::{Board, CharacterId, RoomId};
 mod models;
 mod functions;
 
